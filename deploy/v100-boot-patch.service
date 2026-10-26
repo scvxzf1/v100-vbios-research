@@ -1,0 +1,19 @@
+[Unit]
+Description=V100 VBIOS RAM override (350W / 1912MHz / app 1800)
+After=systemd-udev-settle.service local-fs.target
+Wants=systemd-udev-settle.service
+Before=display-manager.service gdm.service lactd.service
+
+[Service]
+Type=oneshot
+# 卡不存在时由 systemd 直接跳过：不执行脚本、不占用开机时间、不算失败
+ExecCondition=/bin/test -e /sys/bus/pci/devices/0000:04:00.0
+ExecStart=/usr/local/sbin/v100-boot-patch.sh
+TimeoutStartSec=120
+TimeoutStopSec=15
+RemainAfterExit=no
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target

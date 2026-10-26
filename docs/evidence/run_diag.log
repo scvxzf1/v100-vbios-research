@@ -1,0 +1,26 @@
+########## 2026年 10月 25日 星期日 18:10:47 CST 瓶颈诊断 ##########
+=== 停桌面 ===
+=== 应用 c2 (350W + XBAR/GPC 1912) ===
+vbios_version, power.limit [W], power.max_limit [W], clocks.max.sm [MHz], clocks.applications.graphics [MHz]
+88.00.4F.00.09, 350.00 W, 350.00 W, 1912 MHz, 1912 MHz
+Power limit for GPU 00000000:04:00.0 was set to 350.00 W from 350.00 W.
+
+=== 负载诊断（25s）===
+校准 0.16 µs/迭代 → 159786661 次
+压测前: 88.00.4F.00.09, 350.00 W, 350.00 W, 1912 MHz, 1912 MHz
+
+负载 25.3s，81 采样
+  SM 时钟: 峰 1777MHz  中位 1755MHz
+  功耗: 峰 263W  中位 261W
+  温度: 峰 57°C  中位 55°C
+  电压（负载早期读一次）: None mV
+
+节流原因统计（活跃样本数 / 总样本）:
+  无任何节流原因被激活
+
+快照已写入 /path/to/v100-vbios-research/verify-tools/load_snapshot.txt
+=== 恢复原厂 + 桌面 ===
+index, vbios_version, clocks.max.sm [MHz], power.max_limit [W]
+0, 86.07.64.00.52, 1911 MHz, 5001.00 W
+1, 88.00.4F.00.09, 1530 MHz, 300.00 W
+########## done ##########

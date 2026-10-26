@@ -1,0 +1,52 @@
+########## 2026年 10月 25日 星期日 16:38:29 CST ##########
+=== 停桌面 ===
+=== 卸驱动 ===
+  rmmod nvidia_drm ok
+  rmmod nvidia_modeset ok
+  rmmod nvidia_uvm ok
+  rmmod nvidia ok
+  驱动已全部卸载
+=== nvflash --list ===
+NVIDIA Firmware Update Utility (Version 5.867.0)
+Copyright (C) 1993-2024, NVIDIA Corporation. All rights reserved.
+
+NVIDIA display adapters present in system:
+<0> GeForce GTX 1050     (10DE,1C8D,1028,0798) S:00,B:03,D:00,F:00
+<1> Tesla V100-SXM2-16GB (10DE,1DB1,10DE,1212) S:00,B:04,D:00,F:00
+=== nvflash --save (adapter 1) ===
+NVIDIA Firmware Update Utility (Version 5.867.0)
+Copyright (C) 1993-2024, NVIDIA Corporation. All rights reserved.
+
+Reading EEPROM (this operation may take up to 30 seconds)
+
+
+                                                          
+Build GUID            : 2FC75B874C514A628DE788BFCB5C4F30
+Build Number          : 23797866
+IFR Subsystem ID      : 10DE-1212
+Subsystem Vendor ID   : 0x10DE
+Subsystem ID          : 0x1212
+Version               : 88.00.4F.00.09
+Image Hash            : 41EA343EAC5F64ABE05402DE1A86803E
+Hierarchy ID          : Normal Board
+Build Date            : 03/26/18
+Modification Date     : 03/26/18
+UEFI Version          : 0x40006 ( x64 )
+UEFI Variant ID       : 0x0000000000000008 ( GV1xx )
+UEFI Signer(s)        : Microsoft Corporation UEFI CA 2011
+XUSB-FW Version ID    : N/A
+XUSB-FW Build Time    : N/A
+InfoROM Version       : G503.0201.00.03
+InfoROM Backup        : Present
+License Placeholder   : Present
+GPU Mode              : N/A
+CEC OTA-signed Blob   : Not Present
+
+  rc=0
+-rw-r--r-- 1 root root 330240 10月 25 16:38 /path/to/v100-vbios-research/v100_original.rom
+=== 恢复驱动与桌面 ===
+=== 恢复后 ===
+index, name, vbios_version
+0, NVIDIA GeForce GTX 1050, 86.07.64.00.52
+1, Tesla V100-SXM2-16GB, 88.00.4F.00.09
+########## done ##########

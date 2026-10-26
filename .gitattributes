@@ -1,0 +1,4 @@
+# 固件镜像按二进制处理，避免 diff/换行符转换破坏内容
+*.bin binary
+*.rom binary
+*.ko  binary

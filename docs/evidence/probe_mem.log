@@ -1,0 +1,78 @@
+########## 2026年 10月 25日 星期日 18:56:31 CST 显存时钟探测 ##########
+
+############ m0_base ############
+--- 上报 ---
+877 MHz, 877 MHz, 1912 MHz
+--- 支持的显存档位 ---
+        Memory                                         : 877 MHz
+            Graphics                                   : 1912 MHz
+--- 实际带宽 ---
+设备 0000:04:00.0  vbios=88.00.4F.00.09  max_sm=1912  limit=350.00
+显存带宽: 最佳 809.2 GB/s  中位 808.2 GB/s
+--- ECC 错误 ---
+        Volatile
+            Single Bit            
+                Device Memory                          : 0
+--
+        Aggregate
+            Single Bit            
+
+############ m1_1000_min ############
+--- 上报 ---
+877 MHz, 877 MHz, 1912 MHz
+--- 支持的显存档位 ---
+        Memory                                         : 877 MHz
+            Graphics                                   : 1912 MHz
+--- 实际带宽 ---
+设备 0000:04:00.0  vbios=88.00.4F.00.09  max_sm=1912  limit=350.00
+显存带宽: 最佳 808.5 GB/s  中位 806.0 GB/s
+--- ECC 错误 ---
+        Volatile
+            Single Bit            
+                Device Memory                          : 0
+--
+        Aggregate
+            Single Bit            
+
+############ m2_1000_full ############
+--- 上报 ---
+877 MHz, 877 MHz, 1912 MHz
+--- 支持的显存档位 ---
+        Memory                                         : 877 MHz
+            Graphics                                   : 1912 MHz
+--- 实际带宽 ---
+设备 0000:04:00.0  vbios=88.00.4F.00.09  max_sm=1912  limit=350.00
+显存带宽: 最佳 806.6 GB/s  中位 804.6 GB/s
+--- ECC 错误 ---
+        Volatile
+            Single Bit            
+                Device Memory                          : 0
+--
+        Aggregate
+            Single Bit            
+
+############ m3_1126 ############
+--- 上报 ---
+877 MHz, 877 MHz, 1912 MHz
+--- 支持的显存档位 ---
+        Memory                                         : 877 MHz
+            Graphics                                   : 1912 MHz
+--- 实际带宽 ---
+设备 0000:04:00.0  vbios=88.00.4F.00.09  max_sm=1912  limit=350.00
+显存带宽: 最佳 810.7 GB/s  中位 807.6 GB/s
+--- ECC 错误 ---
+        Volatile
+            Single Bit            
+                Device Memory                          : 0
+--
+        Aggregate
+            Single Bit            
+
+=== 恢复最终配置（350W + XBAR1912 + GPC1800）===
+vbios_version, power.limit [W], clocks.max.sm [MHz], clocks.applications.graphics [MHz]
+88.00.4F.00.09, 350.00 W, 1912 MHz, 1800 MHz
+=== 确保驱动 + 桌面 ===
+index, vbios_version, power.limit [W], clocks.max.sm [MHz], clocks.applications.graphics [MHz]
+0, 86.07.64.00.52, [N/A], 1911 MHz, [N/A]
+1, 88.00.4F.00.09, 350.00 W, 1912 MHz, 1800 MHz
+########## done ##########

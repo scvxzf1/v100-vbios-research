@@ -1,0 +1,19 @@
+########## 2026年 10月 25日 星期日 18:46:18 CST 最终配置应用 ##########
+=== 应用最终 payload ===
+vbios_version, power.min_limit [W], power.max_limit [W], clocks.max.sm [MHz], clocks.applications.graphics [MHz]
+88.00.4F.00.09, 150.00 W, 350.00 W, 1912 MHz, 1800 MHz
+Power limit for GPU 00000000:04:00.0 was set to 350.00 W from 350.00 W.
+
+=== 30 秒验收压测 ===
+压测前: vbios=88.00.4F.00.09 limit=350.00W max=350.00W max_sm=1912MHz
+  SM 时钟: 最大 1785 MHz  中位 1747 MHz  最小 1747 MHz  (109 样本)
+  功耗: 最大 263 W  中位 257 W  最小 223 W  (109 样本)
+  温度: 最大 56 °C  中位 54 °C  最小 38 °C  (109 样本)
+判定: 负载下 SM 时钟峰值 1785 MHz（VBIOS 上报上限 1912 MHz）
+      功耗峰值 263 W（当前功耗上限 350.00）
+=== 确保驱动完整 + 桌面 ===
+=== 最终状态（不重载驱动，覆盖保留）===
+index, name, vbios_version, power.limit [W], power.min_limit [W], power.max_limit [W], clocks.max.sm [MHz], clocks.applications.graphics [MHz]
+0, NVIDIA GeForce GTX 1050, 86.07.64.00.52, [N/A], 0.00 W, 5001.00 W, 1911 MHz, [N/A]
+1, Tesla V100-SXM2-16GB, 88.00.4F.00.09, 350.00 W, 150.00 W, 350.00 W, 1912 MHz, 1800 MHz
+########## done ##########

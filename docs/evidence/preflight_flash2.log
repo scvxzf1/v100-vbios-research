@@ -1,0 +1,69 @@
+########## 2026年 10月 25日 星期日 22:50:23 CST 刷写前静态校验 v2（不写入）##########
+=== ① 停服务（lactd 会握住 /dev/nvidia*）===
+  lactd 已停
+=== ② 卸载驱动（最多重试 30 秒）===
+  驱动已全部卸载 ✅
+
+=========== ③ --check：EEPROM 是否支持写入 ===========
+NVIDIA Firmware Update Utility (Version 5.867.0)
+Copyright (C) 1993-2024, NVIDIA Corporation. All rights reserved.
+
+Reading EEPROM (this operation may take up to 30 seconds)
+
+
+                                                          
+Status Register     : Restricted or unsupported.
+
+=========== ④ --compare：与当前 flash 逐字节对比 ===========
+NVIDIA Firmware Update Utility (Version 5.867.0)
+Copyright (C) 1993-2024, NVIDIA Corporation. All rights reserved.
+
+Reading EEPROM (this operation may take up to 30 seconds)
+
+
+                                                          
+NVIDIA Firmware Comparison
+Comparing /path/to/v100-vbios-research/v100_flashable_350w.rom...
+Current      - Version:88.00.4F.00.09 ID:10DE:1DB1:10DE:1212
+               GV100 Board (Normal Board)
+Compare with - Version:88.00.4F.00.09 ID:10DE:1DB1:10DE:1212
+               GV100 Board (Normal Board)
+
+ERROR: Size difference between file(0x50000) and adapter ROM space (0xFF600)
+NOTE: Make sure to compare with entire saved image file.
+    Firmware
+        Legacy BIOS ........................................ Mismatch
+        UEFI ............................................... Pass
+        Firmware Certificate ............................... Pass
+    Firmware
+        Legacy BIOS ........................................ Mismatch
+        UEFI ............................................... Pass
+        Firmware Certificate ............................... Pass
+    InfoROM ................................................ Mismatch
+        Dynamic ............................................ Mismatch
+    Unallocated Space ...................................... Pass
+    Mismatch Details
+        Dynamic
+            RMA Log                                        - Data
+
+
+Command Compare error
+
+=========== ⑤ --save：读回 flash 与原厂备份比对 ===========
+InfoROM Backup        : Present
+License Placeholder   : Present
+GPU Mode              : N/A
+CEC OTA-signed Blob   : Not Present
+
+--- 哈希 ---
+20abda14190204d3c09f191224cdf4a1350e425f89aa7f00c709da067ba98f09  /tmp/recheck_current.rom
+88ab94ac77beb8301a49e94a183cba7d481e49d43d992712171a06b25f16361b  /path/to/v100-vbios-research/v100_original.rom
+结论: 无法比对（文件缺失或内容不同）
+
+=== 恢复 ===
+最终状态:
+index, vbios_version, power.limit [W], clocks.max.sm [MHz], clocks.applications.graphics [MHz]
+0, 86.07.64.00.52, [N/A], 1911 MHz, [N/A]
+1, 88.00.4F.00.09, 350.00 W, 1912 MHz, 1800 MHz
+桌面: active  lactd: active
+########## done ##########
