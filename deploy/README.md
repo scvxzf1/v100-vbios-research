@@ -2,7 +2,7 @@
 
 本目录是**系统内已部署配置的完整备份**，可在系统重装、配置丢失或迁移时一键重建。
 
-原始记录见上级目录 `V100-总览与结论-20261025.md` §六「开机自动生效」。
+原始记录见 [`../docs/01-总览与结论.md`](../docs/01-总览与结论.md) §六「开机自动生效」。
 
 ---
 
@@ -12,7 +12,7 @@
 |---|---|---|
 | `v100-boot-patch.service` | `/etc/systemd/system/` | systemd 单元 |
 | `v100-boot-patch.sh` | `/usr/local/sbin/` | 注入脚本 |
-| `v100_final_payload.bin` | `/etc/v100/` | VBIOS 覆盖 payload，327,680 B |
+| `../firmware/v100_payload_350w.bin` | `/etc/v100/v100_final_payload.bin` | VBIOS 覆盖 payload，327,680 B |
 | `install.sh` | — | 幂等安装（含完整性校验） |
 | `uninstall.sh` | — | 卸载并回原厂行为 |
 | `MANIFEST.sha256` | — | 备份文件校验清单 |
@@ -21,7 +21,7 @@
 
 ```bash
 cd deploy && sha256sum v100-boot-patch.service v100-boot-patch.sh \
-  v100_final_payload.bin install.sh uninstall.sh > MANIFEST.sha256
+  install.sh uninstall.sh ../firmware/v100_payload_350w.bin > MANIFEST.sha256
 ```
 
 ---
@@ -46,6 +46,11 @@ sudo rmmod nvidia_drm nvidia_modeset nvidia_uvm nvidia && sudo modprobe nvidia
 ## 它做什么
 
 目标配置：**功耗 350 W / XBAR 1912 MHz / Applications 1800 MHz**
+
+> 功耗上限由环境变量 **`V100_EXPECT_W`** 决定，**缺省 350**（与参数化之前的写死行为逐字节等价）。
+> TUI 为其他功耗的档案安装持久化时，会写入 drop-in
+> `/etc/systemd/system/v100-boot-patch.service.d/10-v100-tui.conf` 覆盖此值，单元本身仍保持 350 缺省。
+> 若 `deploy/v100-boot-patch.sh` 未包含 `V100_EXPECT_W`（旧版副本），则只支持 350 W 档案（TUI 会报 `E0504` 拒绝安装）。
 
 ```
 等 V100 上线（最多 3 秒）

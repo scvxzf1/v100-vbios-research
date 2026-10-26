@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""V100 快捷操作台 —— 仓库根目录可执行入口（简体中文 TUI，仅 Linux）。
+
+用法：
+    ./v100-tui                # 进入交互界面
+    ./v100-tui --help         # 中文帮助
+    ./v100-tui --version      # 版本
+    ./v100-tui --once         # 只打印只读状态报告
+    ./v100-tui --no-color     # 单色终端 / 重定向时使用
+    sudo ./v100-tui           # 注入与开机持久化需要 root
+
+设计原则：注入与开机持久化都不会在本进程内直接执行；它们被提交为独立
+systemd 单元，界面随即退出。本工具不写 flash、不改电压。
+"""
+import os
+import sys
+
+_REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+from tui.app import main  # noqa: E402  （必须先修好 sys.path）
+
+if __name__ == "__main__":
+    sys.exit(main())

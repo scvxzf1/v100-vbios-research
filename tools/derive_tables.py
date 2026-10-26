@@ -102,8 +102,12 @@ def derive(d):
     hs2, sz, cnt, ss, sc = d[q + 1:q + 6]
     stride = sz + ss * sc
     last = q + hs2 + cnt * stride - stride
+    # 注: entry_size / entry0_3rd_at 为附加导出字段（TUI 数据层需要写回该 u16，
+    # 不得在别处重算 last+entry_size+4 这个公式）；既有键名与含义保持不变。
     r['performance'] = dict(at=q, header_size=hs2, rows=cnt, stride=stride,
+                            entry_size=sz,
                             last_row=last,
+                            entry0_3rd_at=last + sz + 4,
                             entry0_3rd_u16=struct.unpack(
                                 '<H', d[last + sz + 4:last + sz + 6])[0])
 

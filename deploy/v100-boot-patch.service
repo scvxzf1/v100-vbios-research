@@ -6,6 +6,9 @@ Before=display-manager.service gdm.service lactd.service
 
 [Service]
 Type=oneshot
+# 期望功耗上限: 缺省 350 与参数化之前完全一致;
+# TUI 通过 /etc/systemd/system/v100-boot-patch.service.d/10-v100-tui.conf 覆盖此值
+Environment=V100_EXPECT_W=350
 # 卡不存在时由 systemd 直接跳过：不执行脚本、不占用开机时间、不算失败
 ExecCondition=/bin/test -e /sys/bus/pci/devices/0000:04:00.0
 ExecStart=/usr/local/sbin/v100-boot-patch.sh

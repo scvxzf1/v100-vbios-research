@@ -1,6 +1,6 @@
 #!/bin/bash
 # V100 VBIOS RAM 覆盖 —— 开机早期注入
-# 目标配置: 功耗 350 W / XBAR 1912 / GPC(Applications) 1800
+# 目标配置: 功耗 ${V100_EXPECT_W:-350} W / XBAR 1912 / GPC(Applications) 1800
 # 设计原则: 任何环节失败都必须让系统以"原厂状态"正常启动, 绝不阻塞开机。
 set -u
 STOPPED_LACT=0
@@ -8,6 +8,17 @@ GPU=0000:04:00.0
 DEV=/sys/bus/pci/devices/$GPU
 PAYLOAD=/etc/v100/v100_final_payload.bin
 LOG=/var/log/v100-boot-patch.log
+
+# 目标功耗上限: 由 V100_EXPECT_W 覆盖 (单位 W)。
+# 缺省 350 —— 与参数化之前的行为逐字节等价; TUI 用 systemd drop-in 传入其他档案的期望值。
+# 非数字输入一律回退 350, 不让开机流程进到未定义状态。
+EXPECT_W="${V100_EXPECT_W:-350}"
+case "$EXPECT_W" in
+  ''|*[!0-9.]*) EXPECT_W=350 ;;
+esac
+# nvidia-smi 的 power.max_limit 固定输出两位小数且用点号, 比较串必须在 C locale 下生成
+EXPECT_W_2DP=$(LC_ALL=C printf '%.2f' "$EXPECT_W" 2>/dev/null)
+[ -n "${EXPECT_W_2DP:-}" ] || EXPECT_W_2DP=350.00
 
 log(){ echo "[$(date '+%F %T')] $*" >> "$LOG" 2>/dev/null; }
 fail(){ echo 1 > /sys/bus/pci/rescan 2>/dev/null; log "失败: $* -- 已回退原厂"; [ "${STOPPED_LACT:-0}" = "1" ] && systemctl start lactd 2>/dev/null; exit 0; }
@@ -57,11 +68,13 @@ MX=$(nvidia-smi -i "$GPU" --query-gpu=power.max_limit --format=csv,noheader,noun
 SM=$(nvidia-smi -i "$GPU" --query-gpu=clocks.max.sm   --format=csv,noheader,nounits 2>/dev/null | tr -d ' ')
 VB=$(nvidia-smi -i "$GPU" --query-gpu=vbios_version   --format=csv,noheader 2>/dev/null | tr -d ' ')
 
-if [ "$MX" = "350.00" ]; then
-  nvidia-smi -i "$GPU" -pl 350 >/dev/null 2>&1
+log "目标功耗上限: ${EXPECT_W} W (V100_EXPECT_W=${V100_EXPECT_W:-未设置, 取缺省})"
+
+if [ "$MX" = "$EXPECT_W_2DP" ]; then
+  nvidia-smi -i "$GPU" -pl "$EXPECT_W" >/dev/null 2>&1
   log "成功: vbios=$VB  max_limit=${MX}W  max_sm=${SM}MHz"
 else
-  log "验证不符: max_limit='${MX}' (期望 350.00), max_sm='${SM}' -- 保持原厂"
+  log "验证不符: max_limit='${MX}' (期望 ${EXPECT_W_2DP}), max_sm='${SM}' -- 保持原厂"
 fi
 
 [ "${STOPPED_LACT:-0}" = "1" ] && systemctl start lactd 2>/dev/null

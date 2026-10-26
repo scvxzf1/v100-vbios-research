@@ -8,8 +8,13 @@
 并在负载持续期间抓一份完整 -q 快照。
 
 用法: python3 diag_throttle.py [pci] [秒数]
+
+环境变量:
+  SNAP=<文件路径>   负载期间 nvidia-smi -q 快照写到哪(缺省写到本脚本同目录的
+                    load_snapshot.txt；若该目录不可写则跳过写快照，不报错)
 """
 import ctypes as C
+import os
 import subprocess
 import sys
 import threading
@@ -18,7 +23,15 @@ from collections import Counter
 
 PCI = sys.argv[1] if len(sys.argv) > 1 else "0000:04:00.0"
 SECS = float(sys.argv[2]) if len(sys.argv) > 2 else 20.0
-SNAP = "/path/to/v100-vbios-research/verify-tools/load_snapshot.txt"
+# 快照路径: 可用环境变量 SNAP 覆盖; 缺省写到脚本所在目录(可移植, 不依赖本机绝对路径)
+SNAP = os.environ.get("SNAP") or os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "load_snapshot.txt")
+
+
+def _writable(path):
+    """目标目录可写则返回 True; 目录不存在/不可写则返回 False(调用方跳过写快照)。"""
+    d = os.path.dirname(os.path.abspath(path)) or "."
+    return os.path.isdir(d) and os.access(d, os.W_OK)
 
 REASON_FIELDS = [
     "clocks_throttle_reasons.active",
@@ -88,6 +101,9 @@ def voltage():
     return None
 
 
+SNAP_OK = _writable(SNAP)
+
+
 def main():
     CU.cuInit(0)
     dev = C.c_int()
@@ -135,10 +151,14 @@ def main():
                          + ",".join(REASON_FIELDS), "--format=csv,noheader,nounits", "-i", PCI])
                 p = [x.strip() for x in o.strip().split(",")]
                 samples.append((p[0], p[1], p[2], p[3:]))
-                if first:                      # 负载刚开始时抓快照
-                    with open(SNAP, "w") as f:
-                        f.write(run(["nvidia-smi", "-q", "-d", "POWER,CLOCK,PERFORMANCE", "-i", PCI]))
-                        f.write("\n" + run(["nvidia-smi", "-q", "-d", "VOLTAGE", "-i", PCI]))
+                if first:                      # 负载刚开始时抓快照(目录不可写则跳过)
+                    if SNAP_OK:
+                        try:
+                            with open(SNAP, "w") as f:
+                                f.write(run(["nvidia-smi", "-q", "-d", "POWER,CLOCK,PERFORMANCE", "-i", PCI]))
+                                f.write("\n" + run(["nvidia-smi", "-q", "-d", "VOLTAGE", "-i", PCI]))
+                        except OSError:
+                            pass
                     first = False
             except Exception:
                 pass
@@ -187,7 +207,7 @@ def main():
         print("  无任何节流原因被激活")
     for nm, c in cnt.most_common():
         print(f"  {nm:26s} {c}/{len(samples)}")
-    print(f"\n快照已写入 {SNAP}")
+    print(f"\n快照已写入 {SNAP}" if SNAP_OK else "\n(快照未写出：目标目录不可写，已跳过)")
 
 
 if __name__ == "__main__":

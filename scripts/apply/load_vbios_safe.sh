@@ -1,6 +1,9 @@
 #!/bin/bash
 # 注: 原脚本内嵌明文 root 密码, 开源版已改为从环境变量读取。
 #     使用前请先: export ROOT_PASSWORD="你的root密码"
+# 安全提示: 口令通过 bash here-string 直接喂给 su/sudo 的 stdin, 不产生额外子进程,
+#     因此不会出现在 /proc/<pid>/cmdline(进程表)中。更稳妥的做法是配置 NOPASSWD
+#     的 sudoers 规则并改用 `sudo -n`。
 # V100 VBIOS 安全加载测试脚本
 # 设备: 0000:04:00.0 (Tesla V100, 无显示输出)
 
@@ -52,7 +55,7 @@ echo ""
 
 # 阶段 2: 读取当前 registry（如果可能）
 echo "[阶段 2] 尝试读取当前 registry"
-echo "$PASSWORD" | su - root -c "head -c 100 $REGISTRY_PATH 2>&1 | hexdump -C" || echo "（可能不支持读取）"
+su - root -c "head -c 100 $REGISTRY_PATH 2>&1 | hexdump -C" <<< "$PASSWORD" || echo "（可能不支持读取）"
 echo ""
 
 # 阶段 3: 询问用户确认
@@ -74,7 +77,7 @@ fi
 # 阶段 4: 写入 VBIOS
 echo ""
 echo "[阶段 4] 写入 VBIOS 到 registry"
-echo "$PASSWORD" | su - root -c "cat $VBIOS_ROM > $REGISTRY_PATH"
+su - root -c "cat $VBIOS_ROM > $REGISTRY_PATH" <<< "$PASSWORD"
 
 if [ $? -eq 0 ]; then
     echo "✓ VBIOS 已写入 registry"
